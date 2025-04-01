@@ -24,13 +24,15 @@ According to Wikipedia, kaleidoscope is an optical instrument with two or more r
 
 The **Windows kaleidoscope** project is exactly that, an optical instrument, to shown device insights as a regular symmetrical pattern adding beautiful forms.
 
-This repository is under development and alive and for the most, kicking - I welcome any feedback or suggestions for improvement. Reach out on [Twitter](https://twitter.com/dotjesper "dotjesper"), I read Direct Messages (DMs) and allow them from people I do not follow. For other means of contact, please visit [https://dotjesper.com/contact/](https://dotjesper.com/contact/ "Contact")
+This repository is under development and alive and for the most, kicking - I welcome any feedback or suggestions for improvement. Reach out on [Bluesky](https://bsky.app/profile/dotjesper.bsky.social/ "dotjesper.bsky.social") or [Twitter](https://twitter.com/dotjesper/ "dotjesper"), I read Direct Messages (DMs) and allow them from people I do not follow. For other means of contact, please visit [https://dotjesper.com/contact/](https://dotjesper.com/contact/ "Contact").
 
 Do not hesitate to reach out if issues arise or new functionality and improvement comes to mind.
 
 Feel free to fork and build.
 
 This is a personal development, please respect the community sharing philosophy and be nice!
+
+[![Jesper on Bluesky](https://img.shields.io/badge/follow-@dotjesper.bsky.social-whitesmoke?style=social&logo=bluesky)](https://bsky.app/profile/dotjesper.bsky.social/ "Follow Jesper")
 
 ## Requirements
 
@@ -117,5 +119,3 @@ The information and data of this repository and its contents are subject to chan
 - You should never assign these policies without thoroughly test and validation.
 
 This project is intended to serve as a foundation or starting point and should not be considered 'complete'. It has been made available to facilitate learning, development, and knowledge-sharing among communities. Please note that no liability is assumed for the usage or application of the settings within this project in production tenants.
-
-[![Jesper on Bluesky](https://img.shields.io/badge/follow-@dotjesper.bsky.social-whitesmoke?style=social&logo=bluesky)](https://bsky.app/profile/dotjesper.bsky.social/ "Follow Jesper")
