@@ -1,0 +1,9 @@
+#windows-kaleidoscope
+#
+#files to ignore
+
+#directories to ignore
+.bin/
+.dev/
+.docs/
+.notes/

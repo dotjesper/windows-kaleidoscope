@@ -1,0 +1,60 @@
+{
+    "Rules": [
+        {
+            "SettingName": "ProtectionStatus",
+            "Operator": "IsEquals",
+            "DataType": "String",
+            "Operand": "On",
+            "MoreInfoUrl": "https://bing.com",
+            "RemediationStrings": [
+                {
+                    "Language": "en_US",
+                    "Title": "Protection Status mist be 'On'. Value discovered was {ActualValue}.",
+                    "Description": "Please contact your administrator for more information."
+                }
+            ]
+        },
+        {
+            "SettingName": "KeyProtectorType",
+            "Operator": "IsEquals",
+            "DataType": "String",
+            "Operand": "Tpm",
+            "MoreInfoUrl": "https://bing.com",
+            "RemediationStrings": [
+                {
+                    "Language": "en_US",
+                    "Title": "Key Protector Type must be 'TPM'. Value discovered was {ActualValue}.",
+                    "Description": "Please contact your administrator for more information."
+                }
+            ]
+        },
+        {
+            "SettingName": "EncryptionMethod",
+            "Operator": "IsEquals",
+            "DataType": "String",
+            "Operand": "XtsAes128",
+            "MoreInfoUrl": "https://bing.com",
+            "RemediationStrings": [
+                {
+                    "Language": "en_US",
+                    "Title": "EncryptionMethod must be 'XtsAes128'. Value discovered was {ActualValue}.",
+                    "Description": "Please contact your administrator for more information."
+                }
+            ]
+        },
+        {
+            "SettingName": "VolumeStatus",
+            "Operator": "IsEquals",
+            "DataType": "String",
+            "Operand": "FullyEncrypted",
+            "MoreInfoUrl": "https://bing.com",
+            "RemediationStrings": [
+                {
+                    "Language": "en_US",
+                    "Title": "Volume should be Fully Encrypted {ActualValue}.",
+                    "Description": "Please contact your administrator for more information."
+                }
+            ]
+        }
+    ]
+}

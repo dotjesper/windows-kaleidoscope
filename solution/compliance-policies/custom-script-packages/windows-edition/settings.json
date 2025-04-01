@@ -1,0 +1,32 @@
+{
+    "Rules": [
+        {
+            "SettingName": "WindowsEdition",
+            "Operator": "IsEquals",
+            "DataType": "Int64",
+            "Operand": 4,
+            "MoreInfoUrl": "https://dotjeper.com/",
+            "RemediationStrings": [
+                {
+                    "Language": "en_US",
+                    "Title": "Windows Edition must be Windows Enterprise",
+                    "Description": "Windows Edition must be Windows Enterprise. Please contact your administrator for more information."
+                }
+            ]
+        },
+        {
+            "SettingName": "OSArchitecture",
+            "Operator": "IsEquals",
+            "DataType": "String",
+            "Operand": "64-bit",
+            "MoreInfoUrl": "https://dotjeper.com/",
+            "RemediationStrings": [
+                {
+                    "Language": "en_US",
+                    "Title": "Windows Architecture must be 64-bit",
+                    "Description": "Windows Architecture must be 64-bit. Please contact your administrator for more information."
+                }
+            ]
+        }
+    ]
+}
