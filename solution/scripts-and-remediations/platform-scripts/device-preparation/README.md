@@ -41,10 +41,12 @@ Windows Autopilot device preparation automates the initial device setup by confi
   Custom log file path (default writes to `device-preparation.log`).
 
 ## Usage
+
 ```powershell
 .\device-preparation.ps1 -Prefix "WIN-" -Suffix "-01" -NamingMethod "%SERIAL%"
 .\device-preparation.ps1 -Prefix "PC-" -NamingMethod "%RAND:6%"
 .\device-preparation.ps1 -LocationMarker "US" -LocationMarkerPath "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Custom\Location"
+```
 
 # Script properties
 
