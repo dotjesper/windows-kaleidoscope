@@ -26,19 +26,14 @@ Windows Autopilot device preparation automates the initial device setup by confi
 - Optionally sets a location marker in the registry.
 
 ## Parameters
-- **-Prefix**
-  Custom prefix for the computer name (default: `WSR5`).
-- **-Suffix**
-  Custom suffix for the computer name.
+- **-Prefix** - Custom prefix for the computer name (default: `WSR5`).
+- **-Suffix** - Custom suffix for the computer name.
 - **-NamingMethod**
   - `%SERIAL%`: uses the serial number.
   - `%RAND:x%`: uses random digits of length x.
-- **-LocationMarker**
-  Adds a registry marker to identify location or organization.
-- **-LocationMarkerPath**
-  Registry path for the location marker.
-- **-logFile**
-  Custom log file path (default writes to `device-preparation.log`).
+- **-LocationMarker** - Adds a registry marker to identify location or organization.
+- **-LocationMarkerPath** - Registry path for the location marker.
+- **-logFile** - Custom log file path (default writes to `device-preparation.log`).
 
 ## Usage
 
@@ -53,13 +48,17 @@ Windows Autopilot device preparation automates the initial device setup by confi
 ### Basic
 
 PowerShell script: **Modern Workplace - Device preparation script v2**
+
 Description: **Windows Autopilot device preparation script v2**
 
 ### Script settings
 
 PowerShell script: **device-preparation.ps1**
+
 Run this script using the logged on credentials: **No**
+
 Enforce script signature check: **No**
+
 Run script in 64 bit PowerShell Host: **Yes**
 
 ### Assignments
