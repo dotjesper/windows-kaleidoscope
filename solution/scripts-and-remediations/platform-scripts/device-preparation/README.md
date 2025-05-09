@@ -12,7 +12,7 @@ Status: In development
 [![PSScriptAnalyzer verified](https://img.shields.io/badge/PowerShell%20Script%20Analyzer%20verified-Yes-green?style=flat)](https://learn.microsoft.com/powershell/module/psscriptanalyzer/ "PowerShell Script Analyzer")
 [![PowerShell Constrained Language mode verified](https://img.shields.io/badge/PowerShell%20Constrained%20Language%20mode%20verified-Yes-green?style=flat)](https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_language_modes/ "PowerShell Language mode")
 
-# Microsoft Intune platform script: Windows Autopilot device preparation script (PREVIEW).
+# Windows Autopilot device preparation script (PREVIEW).
 
 Windows Autopilot device preparation automates the initial device setup by configuring the computer’s name, setting registry keys for a streamlined out-of-box experience, and optionally creating location markers before the device enters production.
 
