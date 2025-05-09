@@ -38,7 +38,8 @@ param (
     [string]$Suffix = "",
 
     [Parameter(Mandatory = $false, HelpMessage = "Enter a custom log file path (e.g., C:\Temp\log.txt)")]
-    [string]$logFile = ""
+    [Alias("logFile")]
+    [string]$fLogContentFile = "$($Env:ProgramData)\Microsoft\IntuneManagementExtension\Logs\device-preparation.log"
 )
 begin {
     #region :: Environment
@@ -46,7 +47,6 @@ begin {
     #endregion
     #region :: Environment configurations
     [String]$title = "Windows Autopilot device preparation"
-    [string]$fLogContentFile = "$($Env:ProgramData)\Microsoft\IntuneManagementExtension\Logs\device-preparation.log"
     #endregion
     #region :: Functions
     function fLogContent () {
