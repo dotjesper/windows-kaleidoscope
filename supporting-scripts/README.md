@@ -1,24 +1,24 @@
-# Supporting Scripts 
+# Supporting Scripts
 
-These scripts are meant to help you with some common tasks or challenges that you might encounter while working with the main codebase. They are not essential for the functionality of the project, but they can make your life easier and save you some time. 
+These scripts are meant to help you with some common tasks or challenges that you might encounter while working with the main codebase. They are not essential for the functionality of the project, but they can make your life easier and save you some time.
 
-You can run them from the command line or from your preferred IDE. Each script has a descriptive name and a comment at the top explaining its purpose and usage. Some scripts may require additional arguments or parameters, which you can find out by running the script with the -h or --help flag. 
+You can run them from the command line or from your preferred IDE. Each script has a descriptive name and a comment at the top explaining its purpose and usage. Some scripts may require additional arguments or parameters, which you can find out by running the script with the -h or --help flag.
 
-> [!IMPORTANT] 
-> Do not run these scripts from PowerShell ISE! 
+> [!IMPORTANT]
+> Do not run these scripts from PowerShell ISE!
 
-Before using any of the supporting scripts, please make sure that you have the latest version of the repository and that you have installed any required dependencies. 
+Before using any of the supporting scripts, please make sure that you have the latest version of the repository and that you have installed any required dependencies.
 
-Please note: 
+Please note:
 
-- These scripts are not meant to be complete or final solutions, but rather proof of concept or functional exploration of some ideas or techniques that might be useful for the project. They are intended to demonstrate some possibilities and inspire further development and improvement. 
-- These scripts are provided as a convenience and are not thoroughly tested or guaranteed to work in all situations. Use them at your own risk and always backup your data before making any changes. If you encounter any issues or bugs with the scripts, please report them on the repository's issue tracker or contact the author. 
+- These scripts are not meant to be complete or final solutions, but rather proof of concept or functional exploration of some ideas or techniques that might be useful for the project. They are intended to demonstrate some possibilities and inspire further development and improvement.
+- These scripts are provided as a convenience and are not thoroughly tested or guaranteed to work in all situations. Use them at your own risk and always backup your data before making any changes. If you encounter any issues or bugs with the scripts, please report them on the repository's issue tracker or contact the author.
 
 ## Script: Invoke-RemediationReport.ps1
 
 This PowerShell script is designed to connect to Microsoft Graph, fetch organization metadata, and prepare for reading remediation packages. The script first checks for the presence of required modules and exits if they are not found. It then attempts to connect to Microsoft Graph, either with a specified TenantId or without. If the connection is successful, it fetches the organization metadata from Microsoft Graph. The script also sets up some internal variables for later use.
 
-[![PSScriptAnalyzer verified](https://img.shields.io/badge/PowerShell%20Script%20Analyzer%20verified-Yes-green?style=flat)](https://docs.microsoft.com/powershell/module/psscriptanalyzer/ "PowerShell Script Analyzer")
+[![PSScriptAnalyzer verified](https://img.shields.io/badge/PowerShell%20Script%20Analyzer%20verified-Yes-green?style=flat)](https://learn.microsoft.com/powershell/module/psscriptanalyzer/ "PowerShell Script Analyzer")
 [![PowerShell Constrained Language mode verified](https://img.shields.io/badge/PowerShell%20Constrained%20Language%20mode%20verified-Not%20Supported-red?style=flat)](https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_language_modes/ "PowerShell Language mode")
 ![Signed](https://img.shields.io/badge/Signed-No-red?style=flat)
 

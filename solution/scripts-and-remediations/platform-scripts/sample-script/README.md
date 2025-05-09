@@ -12,16 +12,14 @@ Status: In development
 [![PSScriptAnalyzer verified](https://img.shields.io/badge/PowerShell%20Script%20Analyzer%20verified-No-green?style=flat)](https://docs.microsoft.com/en-us/powershell/module/psscriptanalyzer/ "PowerShell Script Analyzer")
 [![PowerShell Constrained Language mode verified](https://img.shields.io/badge/PowerShell%20Constrained%20Language%20mode%20verified-No-green?style=flat)](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes/ "PowerShell Language mode")
 
-# Microsoft Intune platform script: hello-World.ps1
-
-
+# Microsoft Intune platform script: hello-intune.ps1
 
 
 # Script properties
 
 ### Basic
 
-Name: **Hello World M(n)**
+Name: **Hello World**
 
 Description: **Hello world sample script for exploring platform script functionality**
 
