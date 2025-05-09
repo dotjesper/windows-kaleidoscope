@@ -163,7 +163,7 @@ process {
     if ($NamingMethod -match "%SERIAL%") {
         fLogContent -fLogContent "Using serial number for naming..." -fLogContentComponent "$region"
         try {
-            $serialNumber = ((Get-WmiObject -Class Win32_BIOS).SerialNumber -replace "-", "")
+            $serialNumber = ((Get-CimInstance -ClassName Win32_BIOS | Select-Object -ExpandProperty SerialNumber) -replace "-", "")
         }
         catch {
             fLogContent -fLogContent "ERROR: $errMsg" -fLogContentComponent "$region" -fLogContentType 3
@@ -190,7 +190,7 @@ process {
         fLogContent -fLogContent "Using serial number hashing for naming..." -fLogContentComponent "$region"
         fLogContent -fLogContent "Generating hashed serial number..." -fLogContentComponent "$region"
         try {
-            $serialNumber = ((Get-WmiObject -Class Win32_BIOS).SerialNumber -replace "-", "")
+            $serialNumber = ((Get-CimInstance -ClassName Win32_BIOS | Select-Object -ExpandProperty SerialNumber) -replace "-", "")
             fLogContent -fLogContent "> Serial number: $serialNumber" -fLogContentComponent "$region"
         }
         catch {

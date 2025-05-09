@@ -6,13 +6,13 @@ Status: In development
 ---
 
 [![Built for Windows 11](https://img.shields.io/badge/Built%20for%20Windows%2011-Yes-blue?style=flat)](https://windows.com/ "Built for Windows 11")
-[![Built for Windows 10](https://img.shields.io/badge/Built%20for%20Windows%2010-Yes-blue?style=flat)](https://windows.com/ "Built for Windows 10")
+[![Built for Windows 10](https://img.shields.io/badge/Built%20for%20Windows%2010-No-blue?style=flat)](https://windows.com/ "Built for Windows 10")
 [![Built for Windows Autopilot Device Preparation](https://img.shields.io/badge/Built%20for%20Windows%20Autopilot-Yes-blue?style=flat)](https://learn.microsoft.com/autopilot/device-preparation/overview/ "Windows Autopilot")
 
 [![PSScriptAnalyzer verified](https://img.shields.io/badge/PowerShell%20Script%20Analyzer%20verified-No-green?style=flat)](https://learn.microsoft.com/powershell/module/psscriptanalyzer/ "PowerShell Script Analyzer")
-[![PowerShell Constrained Language mode verified](https://img.shields.io/badge/PowerShell%20Constrained%20Language%20mode%20verified-No-green?style=flat)](https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_language_modes/ "PowerShell Language mode")
+[![PowerShell Constrained Language mode verified](https://img.shields.io/badge/PowerShell%20Constrained%20Language%20mode%20verified-Yes-green?style=flat)](https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_language_modes/ "PowerShell Language mode")
 
-# Microsoft Intune platform script: Windows Autopilot device preparation script.
+# Microsoft Intune platform script: Windows Autopilot device preparation script (PREVIEW).
 
 Windows Autopilot device preparation automates the initial device setup by configuring the computer’s name, setting registry keys for a streamlined out-of-box experience, and optionally creating location markers before the device enters production.
 
