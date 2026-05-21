@@ -1,0 +1,32 @@
+{
+  "Rules": [
+    {
+      "SettingName": "ConfigRefreshEnabled",
+      "Operator": "IsEquals",
+      "DataType": "Boolean",
+      "Operand": true,
+      "MoreInfoUrl": "https://learn.microsoft.com/mem/intune/configuration/config-refresh",
+      "RemediationStrings": [
+        {
+          "Language": "en_US",
+          "Title": "Config Refresh is disabled",
+          "Description": "Config Refresh has been disabled on this device. Please sync your device to restore compliance."
+        }
+      ]
+    },
+    {
+      "SettingName": "ScheduledTaskReady",
+      "Operator": "IsEquals",
+      "DataType": "Boolean",
+      "Operand": true,
+      "MoreInfoUrl": "https://learn.microsoft.com/mem/intune/configuration/config-refresh",
+      "RemediationStrings": [
+        {
+          "Language": "en_US",
+          "Title": "Config Refresh scheduled task is not running",
+          "Description": "The Config Refresh scheduled task has been disabled or removed. Please sync your device to restore compliance."
+        }
+      ]
+    }
+  ]
+}

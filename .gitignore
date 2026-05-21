@@ -1,0 +1,14 @@
+# .gitignore - Windows kaleidoscope project settings
+
+#files to ignore
+desktop.ini
+
+#directories to ignore
+.bin/
+.docs/
+.notes/
+
+#ai related files to ignore
+.github/instructions/*.instructions.md
+.github/prompts/*
+.github/skills/*

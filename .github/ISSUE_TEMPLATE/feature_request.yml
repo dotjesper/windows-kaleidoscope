@@ -1,0 +1,69 @@
+name: Feature request
+description: Suggest a new feature or improvement for Windows kaleidoscope
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature or improvement. Please fill out the sections below to help us understand your idea.
+
+  - type: dropdown
+    id: solution-area
+    attributes:
+      label: Solution area
+      description: Which area of the solution does this feature relate to?
+      options:
+        - Compliance policies
+        - Custom compliance discovery scripts
+        - Remediation script packages (collect)
+        - Remediation script packages (monitor)
+        - Remediation script packages (invoke)
+        - Platform scripts
+        - Supporting scripts
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: Describe the problem or gap this feature would address. What is frustrating, missing, or could be improved?
+      placeholder: I am always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+      description: Describe the solution you would like to see. Be as specific as possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe any alternative solutions or workarounds you have considered.
+    validations:
+      required: false
+
+  - type: input
+    id: related-module
+    attributes:
+      label: Related package or script
+      description: If applicable, the name of the related package or script (e.g., `monitor-additional-lsa-protection`, `collect-battery-health`).
+      placeholder: e.g., monitor-additional-lsa-protection
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context, mockups, references, or screenshots about the feature request.
+    validations:
+      required: false

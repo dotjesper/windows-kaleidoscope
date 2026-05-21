@@ -1,0 +1,61 @@
+{
+  "Rules": [
+    {
+      "SettingName": "BiosVersion",
+      "Operator": "GreaterEquals",
+      "DataType": "Version",
+      "Operand": "12.21.100",
+      "MoreInfoUrl": "https://learn.microsoft.com/mem/intune/protect/compliance-custom-script",
+      "RemediationStrings": [
+        {
+          "Language": "en_US",
+          "Title": "BIOS Version needs to be upgraded to at least 12.21.100. Value discovered was {ActualValue}.",
+          "Description": "BIOS must be updated. Please refer to the link above"
+        },
+        {
+          "Language": "de_DE",
+          "Title": "BIOS-Version muss auf mindestens 12.21.100 aktualisiert werden. Der erkannte Wert lautet {ActualValue}.",
+          "Description": "BIOS muss aktualisiert werden. Bitte beziehen Sie sich auf den obigen Link"
+        }
+      ]
+    },
+    {
+      "SettingName": "TPMChipPresent",
+      "Operator": "IsEquals",
+      "DataType": "Boolean",
+      "Operand": true,
+      "MoreInfoUrl": "https://learn.microsoft.com/windows/security/hardware-security/tpm/trusted-platform-module-overview",
+      "RemediationStrings": [
+        {
+          "Language": "en_US",
+          "Title": "TPM chip must be enabled.",
+          "Description": "TPM chip must be enabled. Please refer to the link above"
+        },
+        {
+          "Language": "de_DE",
+          "Title": "TPM-Chip muss aktiviert sein.",
+          "Description": "TPM-Chip muss aktiviert sein. Bitte beziehen Sie sich auf den obigen Link"
+        }
+      ]
+    },
+    {
+      "SettingName": "Manufacturer",
+      "Operator": "IsEquals",
+      "DataType": "String",
+      "Operand": "Microsoft Corporation",
+      "MoreInfoUrl": "https://learn.microsoft.com/windows/win32/cimwin32prov/win32-computersystem",
+      "RemediationStrings": [
+        {
+          "Language": "en_US",
+          "Title": "Only Microsoft devices are supported.",
+          "Description": "You are not currently using a Microsoft device."
+        },
+        {
+          "Language": "de_DE",
+          "Title": "Nur Microsoft-Geräte werden unterstützt.",
+          "Description": "Sie verwenden derzeit kein Microsoft-Gerät."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Launch Windows Sandbox",
+      "type": "shell",
+      "command": "start ${workspaceFolder}/solution/solution.wsb",
+      "group": "none",
+      "presentation": {
+        "reveal": "silent",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open PowerShell (x64) in Scripts",
+      "type": "shell",
+      "command": "Start-Process C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe ${input:runAs} -ArgumentList '-NoExit', '-Command', 'Set-Location ''${workspaceFolder}/solution''${input:languageMode}'",
+      "group": "none",
+      "presentation": {
+        "reveal": "silent",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open PowerShell (x86) in Scripts",
+      "type": "shell",
+      "command": "Start-Process C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe ${input:runAs} -ArgumentList '-NoExit', '-Command', 'Set-Location ''${workspaceFolder}/solution''${input:languageMode}'",
+      "group": "none",
+      "presentation": {
+        "reveal": "silent",
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run PSScriptAnalyzer",
+      "type": "shell",
+      "command": "Invoke-ScriptAnalyzer -Path '${file}' -Settings '${workspaceFolder}/.config/${input:analyzerProfile}.psd1' -Recurse -ReportSummary -ErrorAction SilentlyContinue | Format-Table -AutoSize",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      },
+      "problemMatcher": "$msCompile"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "runAs",
+      "type": "pickString",
+      "description": "Run as user or admin?",
+      "options": [
+        { "label": "User", "value": "" },
+        { "label": "Admin (elevated)", "value": "-Verb RunAs" }
+      ],
+      "default": ""
+    },
+    {
+      "id": "languageMode",
+      "type": "pickString",
+      "description": "Language mode?",
+      "options": [
+        { "label": "Full Language", "value": "" },
+        { "label": "Constrained Language Mode", "value": "; $ExecutionContext.SessionState.LanguageMode = ''ConstrainedLanguage''" }
+      ],
+      "default": ""
+    },
+    {
+      "id": "analyzerProfile",
+      "type": "pickString",
+      "description": "Select PSScriptAnalyzer profile",
+      "options": [
+        { "label": "Default (Warning + Error)", "value": "Default" },
+        { "label": "Strict (all severities)", "value": "Strict" },
+        { "label": "CI (Error only)", "value": "CI" }
+      ],
+      "default": "Default"
+    }
+  ]
+}

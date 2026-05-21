@@ -1,0 +1,120 @@
+name: Bug report
+description: Report a bug or unexpected behavior in Windows kaleidoscope
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug. Please fill out the sections below to help us understand and reproduce the issue.
+
+  - type: dropdown
+    id: solution-area
+    attributes:
+      label: Solution area
+      description: Which area of the solution is affected?
+      options:
+        - Compliance policies
+        - Custom compliance discovery scripts
+        - Remediation script packages (collect)
+        - Remediation script packages (monitor)
+        - Remediation script packages (invoke)
+        - Platform scripts
+        - Supporting scripts
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: package-name
+    attributes:
+      label: Package or script name
+      description: The name of the affected package or script (e.g., `monitor-additional-lsa-protection`, `collect-battery-health`).
+      placeholder: e.g., monitor-additional-lsa-protection
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the bug.
+      placeholder: Describe what happened and what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Deploy script '...' via Microsoft Intune
+        2. Run detection in '...' context
+        3. Observe '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: What actually happened.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: execution-context
+    attributes:
+      label: Execution context
+      description: In which context was the script executed?
+      options:
+        - SYSTEM
+        - USER
+        - Not applicable
+    validations:
+      required: true
+
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      description: The Windows version and build number (e.g., Windows 11 24H2, build 26100.3775).
+      placeholder: e.g., Windows 11 24H2, build 26100.3775
+    validations:
+      required: true
+
+  - type: textarea
+    id: log-output
+    attributes:
+      label: Log output
+      description: Paste any relevant log output from the Intune Management Extension log or script output. Use CMTrace-compatible format if available.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration snippet
+      description: If applicable, paste the relevant JSON configuration or compliance rule snippet.
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context, screenshots, or details about the problem.
+    validations:
+      required: false
