@@ -26,7 +26,7 @@ This folder contains the following platform script packages:
 
 | Folder | Description |
 |--------|-------------|
-| `device-preparation` | Windows Autopilot device preparation script for automated device configuration during enrollment |
+| `device-preparation` | Windows Autopilot device preparation scripts for automated device configuration and Microsoft Defender Antivirus updates during enrollment |
 | `sample-script` | Sample platform script demonstrating key patterns including logging, registry operations, and error handling |
 
 ## Execution behavior
