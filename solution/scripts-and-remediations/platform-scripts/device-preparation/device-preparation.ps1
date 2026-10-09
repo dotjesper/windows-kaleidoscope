@@ -12,7 +12,7 @@
       * Default: Uses a SHA256 hash of the serial number for consistent, unique naming
     - Validates the generated name does not exceed 15 characters (NetBIOS limit)
     - Skips renaming if the device already has the correct prefix
-    - Sets a pending reboot flag after successful rename
+    - Reports when a restart is pending after a successful rename
 
     OOBE REGISTRY SETTINGS:
     - Disables Privacy Experience prompts during OOBE
@@ -20,6 +20,9 @@
     - Sets Privacy Consent status
     - Configures ProtectYourPC settings (value: 3)
     - Hides the End User License Agreement (EULA) page
+
+    COMPLEMENTARY REGISTRY SETTINGS:
+    - Enables administrator control for Windows SSO prompts
 
     BITLOCKER DRIVE ENCRYPTION VALIDATION:
     - Validates BitLocker Drive Encryption status on the system drive
@@ -31,13 +34,14 @@
     - Can be used by other scripts or policies to determine device location
 
 .PARAMETER Features
-    Bitmask to enable/disable specific features. Default is 15 (all enabled).
+    Bitmask to enable/disable specific features. Default is 31 (all enabled).
     1  = Device Renaming
     2  = OOBE Registry Settings
-    4  = BitLocker Drive Encryption Validation
-    8  = Location Marker
+    4  = Complementary Registry Settings
+    8  = BitLocker Drive Encryption Validation
+    16 = Location Marker
 
-    Examples: 15 = All, 7 = All except Location Marker, 5 = Renaming + BitLocker Drive Encryption only
+    Examples: 31 = All, 15 = All except Location Marker, 9 = Renaming + BitLocker Drive Encryption only
 
 .PARAMETER Prefix
     Defines a custom prefix for the computer name. Maximum length is 5 characters.
@@ -75,8 +79,8 @@
     Renames the device using a hashed serial number and sets the location marker to USA.
 
 .NOTES
-    version: 1.5.0
-    date: April 10, 2026
+    version: 1.6.0
+    date: October 8, 2026
     license: MIT License
     --------------------------------------------------------------------------------
     LEGAL DISCLAIMER
@@ -113,9 +117,9 @@
 
 [CmdletBinding(SupportsShouldProcess)]
 param (
-    [Parameter(Mandatory = $false, HelpMessage = 'Bitmask to enable features: 1=Rename, 2=OOBE, 4=BitLocker Drive Encryption, 8=Location. Default 15 (all)')]
-    [ValidateRange(0, 15)]
-    [int]$Features = 15,
+    [Parameter(Mandatory = $false, HelpMessage = 'Bitmask to enable features: 1=Rename, 2=OOBE, 4=Complementary Registry Settings, 8=BitLocker Drive Encryption, 16=Location. Default 31 (all)')]
+    [ValidateRange(0, 31)]
+    [int]$Features = 31,
 
     [Parameter(Mandatory = $false, HelpMessage = 'Enter a custom prefix for the computer name (e.g., WIN, PC, LAP). Maximum length is 5 characters.')]
     [ValidateScript({ $_.Length -le 5 })]
@@ -160,11 +164,12 @@ begin {
     # Log package name for CMTrace log entries
     [string]$logPackageName = 'device-preparation'
 
-    # Feature flags derived from bitmask: 1=Rename, 2=OOBE, 4=BitLocker Drive Encryption, 8=Location
+    # Feature flags derived from bitmask: 1=Rename, 2=OOBE, 4=Complementary Registry Settings, 8=BitLocker Drive Encryption, 16=Location
     [bool]$deviceRenaming = ($Features -band 1) -ne 0
     [bool]$applyOOBERegistrySettings = ($Features -band 2) -ne 0
-    [bool]$validateBitLocker = ($Features -band 4) -ne 0
-    [bool]$setLocationMarker = ($Features -band 8) -ne 0
+    [bool]$applyComplementaryRegistrySettings = ($Features -band 4) -ne 0
+    [bool]$validateBitLocker = ($Features -band 8) -ne 0
+    [bool]$setLocationMarker = ($Features -band 16) -ne 0
 
     # Internal variables
     [string]$newName = ''
@@ -172,12 +177,13 @@ begin {
 
     # Summary tracking
     [hashtable]$summary = @{
-        DeviceRenamed       = $false
-        OOBESettingsApplied = $false
-        BitLockerValidated  = $false
-        LocationMarkerSet   = $false
-        Errors              = [System.Collections.ArrayList]::new()
-        Warnings            = [System.Collections.ArrayList]::new()
+        DeviceRenamed                = $false
+        OOBESettingsApplied          = $false
+        ComplementarySettingsApplied = $false
+        BitLockerValidated           = $false
+        LocationMarkerSet            = $false
+        Errors                       = [System.Collections.ArrayList]::new()
+        Warnings                     = [System.Collections.ArrayList]::new()
     }
     #endregion
 
@@ -289,7 +295,7 @@ begin {
         Write-Log -Message "Detected computer name: $env:COMPUTERNAME" -Component "$region"
         Write-Log -Message "Detected OS version: $([environment]::OSVersion.Version)" -Component "$region"
         Write-Log -Message "Detected Windows UI culture name: $((Get-UICulture).Name)" -Component "$region"
-        Write-Log -Message "Features bitmask: $Features (1=Rename:$deviceRenaming, 2=OOBE:$applyOOBERegistrySettings, 4=BitLocker:$validateBitLocker, 8=Location:$setLocationMarker)" -Component "$region"
+        Write-Log -Message "Features bitmask: $Features (1=Rename:$deviceRenaming, 2=OOBE:$applyOOBERegistrySettings, 4=Complementary:$applyComplementaryRegistrySettings, 8=BitLocker:$validateBitLocker, 16=Location:$setLocationMarker)" -Component "$region"
     }
     catch {
         $errMsg = $_.Exception.Message
@@ -315,27 +321,30 @@ process {
             Write-Log -Message 'Retrieving serial number...' -Component "$region"
             [string]$serialNumber = ((Get-CimInstance -ClassName Win32_BIOS -ErrorAction SilentlyContinue -Verbose:$false | Select-Object -ExpandProperty SerialNumber) -replace '-', '')
             if ($serialNumber) {
-                Write-Log -Message "Serial number retrieved: $serialNumber" -Component "$region"
+                Write-Log -Message 'Serial number retrieved.' -Component "$region"
             }
             else {
                 Write-Log -Message 'Serial number retrieval failed, using fallback value.' -Component "$region" -Severity 3
                 [string]$serialNumber = $(New-Guid).Guid -replace '-', '' # Fallback value if serial number is not found
-                Write-Log -Message "Fallback serial number: $serialNumber" -Component "$region"
+                Write-Log -Message 'Fallback identifier generated.' -Component "$region"
             }
             #endregion
+            $maxGeneratedNameLength = 15 - ($Prefix.Length + $Suffix.Length)
             #region :: Determine naming method
             if ($NamingMethod -match '%SERIAL%') {
                 Write-Log -Message 'Using serial number for naming...' -Component "$region"
-                $maxSerialLength = 15 - ($Prefix.Length + $Suffix.Length)
-                $newName = "$Prefix$($serialNumber.Substring(0,$maxSerialLength))$Suffix"
+                $newName = "$Prefix$($serialNumber.Substring(0, $maxGeneratedNameLength))$Suffix"
                 Write-Log -Message "Generated name: $newName" -Component "$region"
             }
             elseif ($NamingMethod -match '%RAND:(\d+)%') {
                 Write-Log -Message 'Using random digits for naming...' -Component "$region"
                 [int]$randomDigits = [int]$matches[1]
-                if ($randomDigits -gt (15 - ($Prefix.Length + $Suffix.Length))) {
+                if ($randomDigits -lt 1) {
+                    throw 'The random digit count must be greater than zero.'
+                }
+                if ($randomDigits -gt $maxGeneratedNameLength) {
                     Write-Log -Message 'The total length of prefix, suffix, and random digits exceeds 15 characters. Truncating...' -Component "$region" -Severity 2
-                    $randomDigits = 15 - ($Prefix.Length + $Suffix.Length)
+                    $randomDigits = $maxGeneratedNameLength
                 }
                 Write-Log -Message "Using random number with $randomDigits digits for naming..." -Component "$region"
                 $randomNumber = -join (1..$randomDigits | ForEach-Object { Get-Random -Minimum 0 -Maximum 10 })
@@ -354,12 +363,11 @@ process {
                     if ($sha256) { $sha256.Dispose() }
                 }
                 $hashString = ([BitConverter]::ToString($hash)) -replace '-', ''
-                Write-Log -Message "Generated hash: $hashString" -Component "$region"
+                Write-Log -Message 'Generated hash for device naming.' -Component "$region"
                 # Calculate maximum substring length based on prefix + suffix
-                $maxHashLength = 15 - ($Prefix.Length + $Suffix.Length)
-                Write-Log -Message "Using $maxHashLength characters from hash..." -Component "$region"
+                Write-Log -Message "Using $maxGeneratedNameLength characters from hash..." -Component "$region"
                 # Define naming template (prefix + truncated hash + suffix)
-                $newName = "$Prefix$($hashString.Substring(0, $maxHashLength))$Suffix" # Ensuring name not exceed 15 characters
+                $newName = "$Prefix$($hashString.Substring(0, $maxGeneratedNameLength))$Suffix" # Ensuring name not exceed 15 characters
                 Write-Log -Message "Generated name: $newName" -Component "$region"
             }
             #endregion
@@ -398,7 +406,7 @@ process {
             Write-Log -Message 'Error: Generated computer name is empty. Skipping rename.' -Component "$region" -Severity 3
             $null = $summary.Errors.Add('Generated computer name was empty')
         }
-        elseif ($Prefix.Length -gt 0 -and $newName.Length -ge $Prefix.Length -and $env:COMPUTERNAME.Length -ge $Prefix.Length -and $newName.Substring(0, $Prefix.Length) -eq $env:COMPUTERNAME.Substring(0, $Prefix.Length)) {
+        elseif ($Prefix.Length -gt 0 -and $env:COMPUTERNAME.StartsWith($Prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
             Write-Log -Message 'The computer name already starts with the specified prefix.' -Component "$region"
             Write-Log -Message 'No renaming required.' -Component "$region"
             Write-Log -Message "Current name: $($env:COMPUTERNAME)" -Component "$region"
@@ -407,7 +415,7 @@ process {
             Write-Log -Message 'Renaming device...' -Component "$region"
             if ($PSCmdlet.ShouldProcess($env:COMPUTERNAME, "Rename computer to '$newName'")) {
                 try {
-                    $renameStatus = Rename-Computer -NewName $newName -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue -Verbose:$false -PassThru
+                    $renameStatus = Rename-Computer -NewName $newName -Force -ErrorAction Stop -WarningAction SilentlyContinue -Verbose:$false -PassThru
                     # Check if the rename operation was successful
                     if ($renameStatus.HasSucceeded) {
                         Write-Log -Message 'Device renamed successfully' -Component "$region"
@@ -432,22 +440,6 @@ process {
             else {
                 Write-Log -Message "WhatIf: Would rename computer from '$($env:COMPUTERNAME)' to '$newName'" -Component "$region"
             }
-            #region :: Mark device for pending reboot (without forcing it)
-            $region = 'device-renaming: pending-reboot'
-            if ($renameStatus.HasSucceeded) {
-                Write-Log -Message 'Adding pending reboot flag...' -Component "$region"
-                if ($PSCmdlet.ShouldProcess('Registry', 'Add pending reboot flag')) {
-                    try {
-                        $null = New-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update' -PropertyType 'String' -Name 'RebootRequired' -Value 1 -Force
-                    }
-                    catch {
-                        $errMsg = $_.Exception.Message
-                        Write-Log -Message "ERROR: $errMsg" -Component "$region" -Severity 3
-                    }
-                    finally {}
-                }
-            }
-            #endregion
         }
         #endregion
         Write-Log -Message 'Device renaming process completed.' -Component "$region"
@@ -500,6 +492,64 @@ process {
     }
     else {
         Write-Log -Message 'OOBE registry settings is disabled.' -Component "$region"
+    }
+    #endregion
+
+    #region :: Apply complementary registry settings
+    # ---------------------------------------------------------------------------
+    # Configures settings that are unavailable through Microsoft Intune policy.
+    # Add future settings as independent subregions with their own error handling.
+    # ---------------------------------------------------------------------------
+    $region = 'complementary-registry-settings'
+    if ($applyComplementaryRegistrySettings) {
+        Write-Log -Message 'Setting complementary registry settings is enabled.' -Component "$region"
+        Write-Log -Message 'Starting complementary registry settings...' -Component "$region"
+        [bool]$complementarySettingsSucceeded = $true
+        [bool]$complementarySettingsApplied = $false
+
+        #region :: Enable administrator control for Windows SSO prompts
+        # -----------------------------------------------------------------------
+        # Enables administrators to control whether Windows automatically accepts SSO permission prompts.
+        # Reference: https://techcommunity.microsoft.com/blog/windows-itpro-blog/now-available-admin-control-for-sso-prompts-in-windows/4534613
+        # -----------------------------------------------------------------------
+        [string]$settingRegion = 'complementary-registry-settings: SSO-prompts'
+        if ($PSCmdlet.ShouldProcess('HKLM\SOFTWARE\Policies\Microsoft\Windows\AAD\AutoAcceptSsoPermission', 'Set DWORD value to 1')) {
+            try {
+                [string]$aadRegRoot = 'HKLM'
+                [string]$aadRegPath = 'SOFTWARE\Policies\Microsoft\Windows\AAD'
+                [string]$aadRegKeyPath = $($aadRegRoot + ':\' + $aadRegPath)
+
+                if (-not (Test-Path -Path $aadRegKeyPath)) {
+                    Write-Log -Message "Creating registry key: $aadRegRoot\$aadRegPath" -Component "$settingRegion"
+                    $null = New-Item -Path $aadRegKeyPath -Force
+                }
+
+                Write-Log -Message 'Enabling administrator control for Windows SSO prompts...' -Component "$settingRegion"
+                $null = New-ItemProperty -Path $aadRegKeyPath -PropertyType 'DWord' -Name 'AutoAcceptSsoPermission' -Value 1 -Force
+                Write-Log -Message 'Administrator control for Windows SSO prompts enabled successfully.' -Component "$settingRegion"
+                $complementarySettingsApplied = $true
+            }
+            catch {
+                $errMsg = $_.Exception.Message
+                Write-Log -Message "ERROR: $errMsg" -Component "$settingRegion" -Severity 3
+                $null = $summary.Errors.Add("Complementary settings - administrator control for Windows SSO prompts: $errMsg")
+                $complementarySettingsSucceeded = $false
+            }
+            finally {}
+        }
+        else {
+            Write-Log -Message 'WhatIf: Would enable administrator control for Windows SSO prompts' -Component "$settingRegion"
+        }
+        #endregion
+
+        if ($complementarySettingsSucceeded -and $complementarySettingsApplied) {
+            Write-Log -Message 'Complementary registry settings applied successfully.' -Component "$region"
+            $summary.ComplementarySettingsApplied = $true
+        }
+        Write-Log -Message 'Complementary registry settings process completed.' -Component "$region"
+    }
+    else {
+        Write-Log -Message 'Complementary registry settings is disabled.' -Component "$region"
     }
     #endregion
 
@@ -613,6 +663,7 @@ end {
     Write-Log -Message 'Execution Summary' -Component "$region"
     Write-Log -Message "Device Renamed: $($summary.DeviceRenamed)" -Component "$region"
     Write-Log -Message "OOBE Settings Applied: $($summary.OOBESettingsApplied)" -Component "$region"
+    Write-Log -Message "Complementary Settings Applied: $($summary.ComplementarySettingsApplied)" -Component "$region"
     Write-Log -Message "BitLocker Drive Encryption Validated: $($summary.BitLockerValidated)" -Component "$region"
     Write-Log -Message "Location Marker Set: $($summary.LocationMarkerSet)" -Component "$region"
 

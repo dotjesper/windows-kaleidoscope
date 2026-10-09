@@ -6,11 +6,8 @@
     This script forces a Microsoft Defender Antivirus security intelligence update during Out-of-Box
     Experience (OOBE) and device preparation, and logs the versions detected before and after the update.
 
-    The script is intended for scenarios where the built-in mechanisms do not deliver the expected result:
-    - The "Oobe EnableRtpAndSignatureUpdate" CSP, or the "Oobe Enable Rtp And Sig Update" Settings Catalog
-      policy, is not applied or does not work as expected.
-    - Windows 365 Cloud PC provisioning, where the setting is not applied to the Windows 365 Cloud PC, but
-      Microsoft Defender Antivirus still needs to be current to produce clean compliance signals.
+    The script is intended for scenarios where built-in update mechanisms do not leave Microsoft Defender
+    Antivirus security intelligence current after OOBE, including during Windows 365 Cloud PC provisioning.
 
     MICROSOFT DEFENDER ANTIVIRUS SERVICE VALIDATION:
     - Waits for the Microsoft Defender Antivirus service (WinDefend) to reach a running state

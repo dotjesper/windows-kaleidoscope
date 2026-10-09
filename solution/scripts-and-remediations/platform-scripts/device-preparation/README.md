@@ -20,7 +20,7 @@ Prepares Windows devices during Windows Autopilot enrollment and Windows 365 Clo
 
 | Script | Purpose | Log file |
 |--------|---------|----------|
-| `device-preparation.ps1` | Computer naming, OOBE registry settings, BitLocker Drive Encryption validation, and location markers | `DevicePreparation.log` |
+| `device-preparation.ps1` | Computer naming, OOBE and complementary registry settings, BitLocker Drive Encryption validation, and location markers | `DevicePreparation.log` |
 | `defender-update.ps1` | Forces a Microsoft Defender Antivirus security intelligence update and logs the versions before and after | `DefenderUpdate.log` |
 
 Each script is deployed as its own Microsoft Intune platform script, with its own assignment, log file, and exit code. The scripts have no dependency on each other and can be deployed together or on their own. In most environments, `device-preparation.ps1` is assigned to all Autopilot devices, and `defender-update.ps1` is added only where the security intelligence update is not delivered during OOBE.
@@ -29,23 +29,23 @@ Each script is deployed as its own Microsoft Intune platform script, with its ow
 
 The Microsoft Defender Antivirus update is deliberately kept out of `device-preparation.ps1` for the following reasons:
 
-- **Different target scenarios.** Device naming, OOBE settings, and location markers apply to every Autopilot device. The Defender update targets a narrower gap: the `OobeEnableRtpAndSignatureUpdate` CSP - the *Oobe Enable Rtp And Sig Update* Settings Catalog policy - is not always applied, most notably during Windows 365 Cloud PC provisioning, which leaves the Cloud PC with outdated security intelligence and misleading compliance signals.
+- **Different target scenarios.** Device naming, OOBE settings, and location markers apply to every Autopilot device. The Defender update targets devices where security intelligence is not current after built-in update mechanisms run, including Windows 365 Cloud PCs that need current protection data for accurate compliance signals.
 - **Different assignment needs.** Keeping the scripts separate makes it possible to assign the Defender update only to the device groups that need it, such as Windows 365 Cloud PCs, without changing the device preparation assignment.
 - **Different runtime behavior.** `defender-update.ps1` deliberately waits for the Microsoft Defender Antivirus service, retries the update, and can run for several minutes. `device-preparation.ps1` completes quickly and a successful rename sets a pending reboot flag. Separating them keeps a slow or failing signature update from delaying or re-running the device configuration work.
 - **Independent failure and retry.** Microsoft Intune retries a failed platform script on the next three consecutive check-ins. As separate scripts, a failed Defender update is retried on its own, and the device preparation result stays unaffected.
 
 > [!NOTE]
-> The two scripts may be merged into a single device preparation script in a future release, most likely as an additional feature flag, once the platform behavior for security intelligence updates during OOBE and Windows 365 provisioning is consistent. Until then, deploy them as separate platform scripts.
+> The scripts may be merged in a future release if the Defender update can remain optional without delaying the device configuration work. Until then, deploy them as separate platform scripts.
 
 ---
 
 ## device-preparation.ps1
 
-Automates initial Windows device setup during Autopilot enrollment by configuring computer naming, OOBE registry settings, BitLocker Drive Encryption validation, and location markers.
+Automates initial Windows device setup during Windows Autopilot enrollment by configuring computer naming, OOBE and complementary registry settings, BitLocker Drive Encryption validation, and location markers.
 
 ### Overview
 
-This script prepares Windows devices during Windows Autopilot enrollment by performing automated device configuration tasks. It supports multiple naming conventions, configures OOBE settings to streamline the user experience, validates BitLocker Drive Encryption status, and sets location markers for regional configuration.
+This script prepares Windows devices during Windows Autopilot enrollment by performing automated device configuration tasks. It supports multiple naming conventions, configures OOBE and complementary settings to streamline the user experience, validates BitLocker Drive Encryption status, and sets location markers for regional configuration.
 
 ### Features
 
@@ -53,8 +53,22 @@ The script provides the following capabilities, each controlled independently vi
 
 - **Device Renaming** - Rename computers using serial number, random digits, or SHA256 hash
 - **OOBE Configuration** - Disables privacy prompts, voice features, and EULA pages
+- **Complementary Registry Settings** - Enables administrator control for Windows SSO prompts
 - **BitLocker Validation** - Reports encryption status, method, and key protectors
 - **Location Markers** - Sets registry-based markers for regional settings
+
+### Complementary registry settings
+
+The complementary registry settings feature applies the following settings:
+
+```registry
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\AAD]
+"AutoAcceptSsoPermission"=dword:00000001
+```
+
+`AutoAcceptSsoPermission` enables administrator control for Windows SSO prompts.
+
+For background and behavior details about the SSO setting, see [Now available: Admin control for SSO prompts in Windows](https://techcommunity.microsoft.com/blog/windows-itpro-blog/now-available-admin-control-for-sso-prompts-in-windows/4534613 "Now available: Admin control for SSO prompts in Windows").
 
 ### Requirements
 
@@ -68,7 +82,7 @@ The script requires the following to run:
 
 The script accepts the following parameters:
 
-- **`-Features`** (Int, default: `15`) - Bitmask to enable/disable features (see Feature Flags below)
+- **`-Features`** (Int, default: `31`) - Bitmask to enable/disable features (see Feature Flags below)
 - **`-Prefix`** (String, default: `WSR5`) - Custom prefix for computer name (max 5 characters)
 - **`-Suffix`** (String, default: empty) - Custom suffix for computer name (max 5 characters)
 - **`-NamingMethod`** (String, default: empty) - Naming method: `%SERIAL%` or `%RAND:x%`
@@ -83,11 +97,12 @@ The script accepts the following parameters:
 The `-Features` parameter uses a bitmask to control which features are enabled:
 
 | Flag | Value | Feature |
-|:----:|:-----:|---------|
-| 1 | 0001 | Device Renaming |
-| 2 | 0010 | OOBE Registry Settings |
-| 4 | 0100 | BitLocker Drive Encryption Validation |
-| 8 | 1000 | Location Marker |
+|-----:|:-----:|---------|
+| 1 | 00001 | Device Renaming |
+| 2 | 00010 | OOBE Registry Settings |
+| 4 | 00100 | Complementary Registry Settings |
+| 8 | 01000 | BitLocker Drive Encryption Validation |
+| 16 | 10000 | Location Marker |
 
 #### Common combinations
 
@@ -95,12 +110,15 @@ Common feature flag combinations for typical deployment scenarios:
 
 | Value | Features Enabled |
 |------:|------------------|
-| `15` | All features (default) |
-| `7` | Renaming + OOBE + BitLocker Drive Encryption (no location marker) |
-| `5` | Renaming + BitLocker Drive Encryption |
+| `31` | All features (default) |
+| `27` | All features except Complementary Registry Settings |
+| `15` | All features except location marker |
+| `11` | Renaming + OOBE + BitLocker Drive Encryption |
+| `9` | Renaming + BitLocker Drive Encryption |
+| `8` | BitLocker Drive Encryption Validation only |
+| `4` | Complementary Registry Settings only |
 | `3` | Renaming + OOBE |
 | `1` | Device Renaming only |
-| `4` | BitLocker Drive Encryption Validation only |
 | `0` | All features disabled |
 
 #### Feature flag examples
@@ -109,16 +127,16 @@ Examples showing how to use the `-Features` parameter:
 
 ```powershell
 # All features enabled (default)
-.\device-preparation.ps1 -Features 15
+.\device-preparation.ps1 -Features 31
 
 # Only BitLocker Drive Encryption validation
-.\device-preparation.ps1 -Features 4
+.\device-preparation.ps1 -Features 8
 
 # Device renaming and OOBE settings only
 .\device-preparation.ps1 -Features 3 -Prefix "LAP"
 
 # All features except location marker
-.\device-preparation.ps1 -Features 7 -Prefix "PC" -NamingMethod "%SERIAL%"
+.\device-preparation.ps1 -Features 15 -Prefix "PC" -NamingMethod "%SERIAL%"
 ```
 
 ### Usage examples
@@ -378,10 +396,7 @@ Forces a Microsoft Defender Antivirus security intelligence update during device
 
 ### Overview
 
-This script is intended for scenarios where the built-in mechanisms do not deliver the expected result:
-
-- The `OobeEnableRtpAndSignatureUpdate` CSP - the *Oobe Enable Rtp And Sig Update* Settings Catalog policy - is not applied or does not work as expected.
-- Windows 365 Cloud PC provisioning, where the setting is not applied to the Cloud PC, but Microsoft Defender Antivirus still needs to be current to produce clean compliance signals.
+Use this script when built-in update mechanisms do not leave Microsoft Defender Antivirus security intelligence current after OOBE, including during Windows 365 Cloud PC provisioning.
 
 ### Features
 
